@@ -3,30 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="./assets/javascript/app.js"></script>
-    <title>Appointment Scheduling</title>
+    <title>Patient Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .alert {
+            margin-top: 20px;
+            padding: 10px;
+            color: #fff;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert.success {
+            background-color: #28a745;
+        }
+        .alert.error {
+            background-color: #dc3545;
+        }
+    </style>
 </head>
 <body>
-    <h1>Appointment Scheduling</h1>
-    <form id="appointmentForm">
-        <label for="name">Name:</label>
-        <input type="text" id="name" required><br><br>
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" required><br><br>
-        
-        <label for="date">Appointment Date:</label>
-        <input type="date" id="date" required><br><br>
-        
-        <label for="time">Appointment Time:</label>
-        <input type="time" id="time" required><br><br>
-        
-        <button type="submit">Schedule Appointment</button>
-    </form>
-    
-    <h2>Scheduled Appointments</h2>
-    <ul id="appointmentsList"></ul>
+    <div class="container">
+        <h1>Patient Portal</h1>
+        <form id="portalForm">
+            <label>
+                <input type="checkbox" id="isNewPatient"> Is New Patient
+            </label>
+            <label>
+                <input type="checkbox" id="appointmentAvailable"> Appointment Available
+            </label>
+            <button type="submit">Start</button>
+        </form>
+        <div id="alert" class="alert"></div>
+    </div>
+    <script>
+        document.getElementById('portalForm').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-    <script src="appointment.js"></script>
+            const isNewPatient = document.getElementById('isNewPatient').checked;
+            const appointmentAvailable = document.getElementById('appointmentAvailable').checked;
+
+            fetch('/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    isNewPatient: isNewPatient,
+                    appointmentAvailable: appointmentAvailable,
+                }),
+            })
+            .then(response => response.text())
+            .then(data => {
+                const alertDiv = document.getElementById('alert');
+                alertDiv.style.display = 'block';
+                alertDiv.className = 'alert success';
+                alertDiv.textContent = 'Process started successfully';
+            })
+            .catch(error => {
+                const alertDiv = document.getElementById('alert');
+                alertDiv.style.display = 'block';
+                alertDiv.className = 'alert error';
+                alertDiv.textContent = 'An error occurred: ' + error;
+            });
+        });
+    </script>
 </body>
 </html>
